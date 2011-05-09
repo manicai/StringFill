@@ -1,0 +1,8 @@
+*.obj
+*.dll
+_Resharper*
+*Resharper.user
+*.suo
+TestResults/
+bin/
+obj/
