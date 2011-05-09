@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using StringFill;
@@ -107,6 +108,21 @@ namespace UnitTests
         {
             var sb = new StringBuilder();
             sb.AppendFill("{ham}", new { eggs = 1 });
+        }
+
+        [TestMethod]
+        public void StringBuilder_AppendFill_ShouldFillCorrectlyUsingCulture()
+        {
+            var turkishCulture = CultureInfo.GetCultureInfo("tr-TR");
+
+            var parameters = new { arg1 = 1.30, arg2 = DateTime.FromOADate(1000) };
+            var sb = new StringBuilder();
+            sb.AppendFill(turkishCulture, "exec SomeProc({arg1}, {arg2});",
+                          parameters);
+
+            string expected = String.Format(turkishCulture, "exec SomeProc({0}, {1});",
+                                            parameters.arg1, parameters.arg2);
+            Assert.AreEqual(expected, sb.ToString());
         }
     }
 }

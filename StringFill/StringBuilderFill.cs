@@ -37,7 +37,7 @@ namespace StringFill
             }
             
             var formatSpecification = ConvertToFormatSpecification(format, parameters);
-            @this.AppendFormat(formatSpecification.Format, formatSpecification.Args);
+            @this.AppendFormat(provider, formatSpecification.Format, formatSpecification.Args);
 
             return @this;
         }
