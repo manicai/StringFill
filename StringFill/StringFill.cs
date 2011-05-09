@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Text;
 
 namespace StringFill
@@ -7,9 +8,7 @@ namespace StringFill
     {
         public static String Fill(String format, object parameters)
         {
-            var sb = new StringBuilder();
-            sb.AppendFill(format, parameters);
-            return sb.ToString();
+            return Fill(null, format, parameters);
         }
 
         public static String Fill(IFormatProvider formatProvider, String format, object parameters)
