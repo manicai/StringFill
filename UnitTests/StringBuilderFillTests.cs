@@ -18,15 +18,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 //
-
-using System;
-using System.Globalization;
-using System.Text;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using StringFill;
-
 namespace UnitTests
 {
+    using System;
+    using System.Globalization;
+    using System.Text;
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using StringFill;
+
     /// <summary>
     /// Summary description for StringBuilder AppendFill extension method.
     /// </summary>

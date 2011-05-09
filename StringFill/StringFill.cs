@@ -18,12 +18,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 //
-
-using System;
-using System.Text;
-
 namespace StringFill
 {
+    using System;
+    using System.Text;
+
     public static class StringFill
     {
         public static String Fill(String format, object parameters)
