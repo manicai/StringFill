@@ -144,5 +144,13 @@ namespace UnitTests
                                             parameters.arg1, parameters.arg2);
             Assert.AreEqual(expected, sb.ToString());
         }
+
+        [TestMethod]
+        [ExpectedException(typeof(FormatException))]
+        public void StringBuilder_AppendFill_ShouldThrowOnInvalidFormatString()
+        {
+            var sb = new StringBuilder();
+            sb.AppendFill("{", new {});
+        }
     }
 }

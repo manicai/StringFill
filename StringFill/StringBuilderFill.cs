@@ -78,6 +78,10 @@ namespace StringFill
                     var ch = format[index++];
                     if (ch == '{')
                     {
+                        if (index == length)
+                        {
+                            throw new FormatException("Invalid format string");
+                        }
                         if (format[index] == '{')
                         {
                             index++;
@@ -154,7 +158,7 @@ namespace StringFill
                 return field.GetValue(parameters);
             }
 
-            throw new FormatException("Parameter named " + name + " does not exist.");
+            throw new FormatException("Named parameter not found: " + name);
         }
     }
 }
