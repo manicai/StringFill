@@ -24,7 +24,6 @@ namespace StringFill
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Linq;
-    using System.Reflection;
     using System.Text;
 
     public static class StringBuilderFill
@@ -55,13 +54,27 @@ namespace StringFill
             {
                 throw new ArgumentNullException(format == null ? "format" : "parameters");
             }
-            
+
+            // We don't try and fully understand format specifiers instead we
+            // map the names to a indices and create a list so those indices
+            // map to the right objects. This simplifies the parsing needed.
+            //
+            // The disadvantage of doing this as a translation is that we leave
+            // some of the error handling to AppendFormat which could produce
+            // confusing error messages in the case of invalid format strings.
             var formatSpecification = ConvertToFormatSpecification(format, parameters);
             @this.AppendFormat(provider, formatSpecification.Format, formatSpecification.Args);
 
             return @this;
         }
 
+        /// <summary>
+        /// Convert the name based format string to index based on and return
+        /// the result and an array of the appropriate items in the correct
+        /// order.
+        /// </summary>
+        /// <param name="format">Name based format string</param>
+        /// <param name="parameters">Parameter object instance.</param>
         private static FormatSpecification ConvertToFormatSpecification(string format, object parameters)
         {
             var names = new List<string>();
@@ -70,9 +83,11 @@ namespace StringFill
             int length = format.Length;
             var resultFormat = new StringBuilder(format.Length);
 
-            // Scan for { and }
+            // Scan for format specifiers.
             while (index < length)
             {
+                // Until the start of the next format specifier or the end of
+                // the string.
                 while (index < length)
                 {
                     var ch = format[index++];
@@ -82,6 +97,8 @@ namespace StringFill
                         {
                             throw new FormatException("Invalid format string");
                         }
+                        // We need to leave quoted braces ("{{") for 
+                        // AppendFormat to handle.
                         if (format[index] == '{')
                         {
                             index++;
@@ -104,6 +121,8 @@ namespace StringFill
                     break;
                 }
 
+                // If not the end of the string it's a format specifier so 
+                // we need to map the name to a new index.
                 Debug.Assert(format[index] == '{');
                 resultFormat.Append('{').Append(names.Count);
                 index++;
@@ -111,6 +130,10 @@ namespace StringFill
                 var name = new StringBuilder();
                 while (index < length)
                 {
+                    // We could be more aggressive in ensuring that the 
+                    // name matches as valid .NET property or field name.
+                    // Instead just stop when we see a valid character for 
+                    // the next part of the format specifier.
                     var ch = format[index++];
                     if (ch == ',' || ch == ':' || ch == '}')
                     {
