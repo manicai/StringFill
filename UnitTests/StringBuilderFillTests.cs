@@ -152,5 +152,20 @@ namespace UnitTests
             var sb = new StringBuilder();
             sb.AppendFill("{", new {});
         }
+
+        private class TestParameters
+        {
+            public string S { get; set; }
+            public int I { get; set; }
+        }
+
+        [TestMethod]
+        public void StringBuilder_AppendFill_ShouldFillUsingProperties()
+        {
+            var parameters = new TestParameters {S = "eggs", I = 201};
+            var sb = new StringBuilder();
+            sb.AppendFill("{S} = {I}", parameters);
+            Assert.AreEqual("eggs = 201", sb.ToString());
+        }
     }
 }
