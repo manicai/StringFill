@@ -41,10 +41,55 @@ namespace StringFill
             return AppendFill(@this, null, format, parameters);
         }
 
+        public static StringBuilder AppendFill(this StringBuilder @this,
+                                               string format,
+                                               IDictionary<string, object> parameters)
+        {
+            return AppendFill(@this, null, format, parameters);
+        }
+
+        public static StringBuilder AppendFill(this StringBuilder @this,
+                                               IFormatProvider provider,
+                                               string format,
+                                               IDictionary<string, object> parameters)
+        {
+            CheckParameters(@this, format, parameters);
+
+            Func<string, object> parameterLookup = name => parameters[name];
+
+            return Fill(@this, format, provider, parameterLookup);
+        }
+
         public static StringBuilder AppendFill(this StringBuilder @this, 
                                                IFormatProvider provider, 
                                                string format, 
                                                object parameters)
+        {
+            CheckParameters(@this, format, parameters);
+
+            Func<string, object> parameterLookup = name => ValueForName(parameters, name);
+
+            return Fill(@this, format, provider, parameterLookup);
+        }
+
+        private static StringBuilder Fill(StringBuilder stringBuilder, string format, 
+                                          IFormatProvider provider,
+                                          Func<string, object> parameterLookup)
+        {
+            // We don't try and fully understand format specifiers instead we
+            // map the names to a indices and create a list so those indices
+            // map to the right objects. This simplifies the parsing needed.
+            //
+            // The disadvantage of doing this as a translation is that we leave
+            // some of the error handling to AppendFormat which could produce
+            // confusing error messages in the case of invalid format strings.
+            var formatSpecification = ConvertToFormatSpecification(format, parameterLookup);
+            stringBuilder.AppendFormat(provider, formatSpecification.Format, formatSpecification.Args);
+
+            return stringBuilder;
+        }
+
+        private static void CheckParameters(StringBuilder @this, string format, object parameters)
         {
             if (@this == null)
             {
@@ -54,18 +99,6 @@ namespace StringFill
             {
                 throw new ArgumentNullException(format == null ? "format" : "parameters");
             }
-
-            // We don't try and fully understand format specifiers instead we
-            // map the names to a indices and create a list so those indices
-            // map to the right objects. This simplifies the parsing needed.
-            //
-            // The disadvantage of doing this as a translation is that we leave
-            // some of the error handling to AppendFormat which could produce
-            // confusing error messages in the case of invalid format strings.
-            var formatSpecification = ConvertToFormatSpecification(format, parameters);
-            @this.AppendFormat(provider, formatSpecification.Format, formatSpecification.Args);
-
-            return @this;
         }
 
         /// <summary>
@@ -75,7 +108,8 @@ namespace StringFill
         /// </summary>
         /// <param name="format">Name based format string</param>
         /// <param name="parameters">Parameter object instance.</param>
-        private static FormatSpecification ConvertToFormatSpecification(string format, object parameters)
+        private static FormatSpecification ConvertToFormatSpecification(string format, 
+                                                                        Func<string, object> parameterLookup)
         {
             var names = new List<string>();
 
@@ -157,13 +191,8 @@ namespace StringFill
             return new FormatSpecification
                        {
                            Format = resultFormat.ToString(),
-                           Args = GetValuesForNames(parameters, names)
+                           Args = names.Select(n => parameterLookup(n)).ToArray()
                        };
-        }
-
-        private static object[] GetValuesForNames(object parameters, IEnumerable<string> names)
-        {
-            return names.Select(n => ValueForName(parameters, n)).ToArray();     
         }
 
         private static object ValueForName(object parameters, string name)

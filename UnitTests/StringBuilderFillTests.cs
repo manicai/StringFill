@@ -18,6 +18,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 //
+using System.Collections.Generic;
+
 namespace UnitTests
 {
     using System;
@@ -32,38 +34,23 @@ namespace UnitTests
     [TestClass]
     public class StringBuilderFillTests
     {
+        private StringBuilder sb;
+
         /// <summary>
         /// Gets or sets the test context which provides
         /// information about and functionality for the current test run.
         /// </summary>
         public TestContext TestContext { get; set; }
 
-        #region Additional test attributes
-        //
-        // You can use the following additional attributes as you write your tests:
-        //
-        // Use ClassInitialize to run code before running the first test in the class
-        // [ClassInitialize()]
-        // public static void MyClassInitialize(TestContext testContext) { }
-        //
-        // Use ClassCleanup to run code after all tests in a class have run
-        // [ClassCleanup()]
-        // public static void MyClassCleanup() { }
-        //
-        // Use TestInitialize to run code before running each test 
-        // [TestInitialize()]
-        // public void MyTestInitialize() { }
-        //
-        // Use TestCleanup to run code after each test has run
-        // [TestCleanup()]
-        // public void MyTestCleanup() { }
-        //
-        #endregion
-
+        [TestInitialize]
+        public void MyTestInitialize()
+        {
+            sb = new StringBuilder();
+        }
+        
         [TestMethod]
         public void StringBuilder_AppendFill_ShouldNotAlterStringWithoutFormatItems()
         {
-            var sb = new StringBuilder();
             const string Text = "This is a test";
             sb.AppendFill(Text, new {});
             Assert.AreEqual(Text, sb.ToString());
@@ -72,7 +59,6 @@ namespace UnitTests
         [TestMethod]
         public void StringBuilder_AppendFill_ShouldReturnSameInstance()
         {
-            var sb = new StringBuilder();
             var result = sb.AppendFill("This is a test", new {});
             Assert.AreEqual(sb, result);
         }
@@ -80,7 +66,6 @@ namespace UnitTests
         [TestMethod]
         public void StringBuilder_AppendFill_ShouldCollapseDoubleBraces()
         {
-            var sb = new StringBuilder();
             const string Text = "This is a {{test}}";
             sb.AppendFill(Text, new {});
             Assert.AreEqual("This is a {test}", sb.ToString());
@@ -89,8 +74,6 @@ namespace UnitTests
         [TestMethod]
         public void StringBuilder_AppendFill_ShouldInterpolateByName()
         {
-            var sb = new StringBuilder();
-
             sb.AppendFill("Hello {name}", new {name = "World"});
             Assert.AreEqual("Hello World", sb.ToString());
         }
@@ -98,8 +81,6 @@ namespace UnitTests
         [TestMethod]
         public void StringBuilder_AppendFill_ShouldMultipleValuesInterpolateByName()
         {
-            var sb = new StringBuilder();
-
             sb.AppendFill("Hello {name}. How is {name} today?", new { name = "World" });
             Assert.AreEqual("Hello World. How is World today?", sb.ToString());
         }
@@ -107,8 +88,6 @@ namespace UnitTests
         [TestMethod]
         public void StringBuilder_AppendFill_ShouldMultipleDifferentValuesInterpolateByName()
         {
-            var sb = new StringBuilder();
-
             sb.AppendFill("Hello {name}. What {question}?",
                           new {name = "World", question = "time is it", ignored = "Boo!"});
             Assert.AreEqual("Hello World. What time is it?", sb.ToString());
@@ -118,7 +97,6 @@ namespace UnitTests
         [ExpectedException(typeof(FormatException))]
         public void StringBuilder_AppendFill_ShouldThrowIfEmptyName()
         {
-            var sb = new StringBuilder();
             sb.AppendFill("Hello {}", new {});
         }
 
@@ -126,7 +104,6 @@ namespace UnitTests
         [ExpectedException(typeof(FormatException))]
         public void StringBuilder_AppendFill_ShouldThrowIfMissingName()
         {
-            var sb = new StringBuilder();
             sb.AppendFill("{ham}", new { eggs = 1 });
         }
 
@@ -136,7 +113,6 @@ namespace UnitTests
             var turkishCulture = CultureInfo.GetCultureInfo("tr-TR");
 
             var parameters = new { arg1 = 1.30, arg2 = DateTime.FromOADate(1000) };
-            var sb = new StringBuilder();
             sb.AppendFill(turkishCulture, "exec SomeProc({arg1}, {arg2});",
                           parameters);
 
@@ -149,7 +125,6 @@ namespace UnitTests
         [ExpectedException(typeof(FormatException))]
         public void StringBuilder_AppendFill_ShouldThrowOnInvalidFormatString()
         {
-            var sb = new StringBuilder();
             sb.AppendFill("{", new {});
         }
 
@@ -163,9 +138,38 @@ namespace UnitTests
         public void StringBuilder_AppendFill_ShouldFillUsingProperties()
         {
             var parameters = new TestParameters {S = "eggs", I = 201};
-            var sb = new StringBuilder();
             sb.AppendFill("{S} = {I}", parameters);
             Assert.AreEqual("eggs = 201", sb.ToString());
+        }
+
+        [TestMethod]
+        public void StringBuilder_AppendFill_ShouldBeAbleToUseDictionary()
+        {
+            var parameters = new Dictionary<string, object>();
+            parameters["key"] = "value";
+
+            sb.AppendFill("{key}", parameters);
+            Assert.AreEqual("value", sb.ToString());
+        }
+
+        [TestMethod]
+        public void StringBuilder_AppendFill_ShouldUseDictionaryMembersOverReflection()
+        {
+            var parameters = new Dictionary<string, object>();
+            parameters["Count"] = "value";
+
+            sb.AppendFill("{Count}", parameters);
+            Assert.AreEqual("value", sb.ToString());
+        }
+
+        [TestMethod]
+        public void StringBuilder_AppendFill_ShouldUserReflectionOverDictionaryMembersForObject()
+        {
+            var parameters = new Dictionary<string, object>();
+            parameters["Count"] = "value";
+
+            sb.AppendFill("{Count}", (object)parameters);
+            Assert.AreEqual("1", sb.ToString());
         }
     }
 }
