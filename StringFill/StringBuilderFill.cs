@@ -146,13 +146,13 @@ namespace StringFill
         private static object ValueForName(object parameters, string name)
         {
             Type type = parameters.GetType();
-            var property = type.GetProperty(name, BindingFlags.Public | BindingFlags.Instance);
+            var property = type.GetProperty(name);
             if (property != null)
             {
                 return property.GetValue(parameters, new object[0]);
             }
 
-            var field = type.GetField(name, BindingFlags.Public | BindingFlags.Instance);
+            var field = type.GetField(name);
             if (field != null)
             {
                 return field.GetValue(parameters);
