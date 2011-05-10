@@ -171,5 +171,15 @@ namespace UnitTests
             sb.AppendFill("{Count}", (object)parameters);
             Assert.AreEqual("1", sb.ToString());
         }
+
+        [TestMethod]
+        public void StringBuilder_AppendFill_ShouldWorkForAnyDictionaryValueType()
+        {
+            var parameters = new Dictionary<string, int>();
+            parameters["Count"] = -300;
+
+            sb.AppendFill("{Count}", parameters);
+            Assert.AreEqual("-300", sb.ToString());
+        }
     }
 }

@@ -41,17 +41,17 @@ namespace StringFill
             return AppendFill(@this, null, format, parameters);
         }
 
-        public static StringBuilder AppendFill(this StringBuilder @this,
-                                               string format,
-                                               IDictionary<string, object> parameters)
+        public static StringBuilder AppendFill<T>(this StringBuilder @this,
+                                                  string format,
+                                                  IDictionary<string, T> parameters)
         {
             return AppendFill(@this, null, format, parameters);
         }
 
-        public static StringBuilder AppendFill(this StringBuilder @this,
-                                               IFormatProvider provider,
-                                               string format,
-                                               IDictionary<string, object> parameters)
+        public static StringBuilder AppendFill<T>(this StringBuilder @this,
+                                                  IFormatProvider provider,
+                                                  string format,
+                                                  IDictionary<string, T> parameters)
         {
             CheckParameters(@this, format, parameters);
 
