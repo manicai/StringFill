@@ -23,5 +23,5 @@ or
 ## Questions
 
 **Can I use it with Dictionary&lt;string, object&gt;?** Yes, if you pass in a 
-generic dictionary of string to anything it will perform the look up based on
+dictionary, generic or otherwise, it will perform the look up based on
 the keys of the dictionary rather than the properties.

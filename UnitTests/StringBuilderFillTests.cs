@@ -181,5 +181,15 @@ namespace UnitTests
             sb.AppendFill("{Count}", parameters);
             Assert.AreEqual("-300", sb.ToString());
         }
+
+        [TestMethod]
+        public void StringBuilder_AppendFill_ShouldWorkForNonGenericDictionary()
+        {
+            var parameters = new System.Collections.Hashtable();
+            parameters["Count"] = -300;
+
+            sb.AppendFill("{Count}", parameters);
+            Assert.AreEqual("-300", sb.ToString());
+        }
     }
 }

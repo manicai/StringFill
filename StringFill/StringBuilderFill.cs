@@ -18,6 +18,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 //
+using System.Collections;
+
 namespace StringFill
 {
     using System;
@@ -41,17 +43,17 @@ namespace StringFill
             return AppendFill(@this, null, format, parameters);
         }
 
-        public static StringBuilder AppendFill<T>(this StringBuilder @this,
-                                                  string format,
-                                                  IDictionary<string, T> parameters)
+        public static StringBuilder AppendFill(this StringBuilder @this,
+                                               string format,
+                                               IDictionary parameters)
         {
             return AppendFill(@this, null, format, parameters);
         }
 
-        public static StringBuilder AppendFill<T>(this StringBuilder @this,
-                                                  IFormatProvider provider,
-                                                  string format,
-                                                  IDictionary<string, T> parameters)
+        public static StringBuilder AppendFill(this StringBuilder @this,
+                                               IFormatProvider provider,
+                                               string format,
+                                               IDictionary parameters)
         {
             CheckParameters(@this, format, parameters);
 
